@@ -13,7 +13,7 @@ import (
 func Load(path string) (*Store, error) {
 	b, err := os.ReadFile(path)
 	if errors.Is(err, fs.ErrNotExist) {
-		return nil, fmt.Errorf("no knowledge store at %s (run `projectcontext init`)", path)
+		return nil, fmt.Errorf("no knowledge store at %s (run `ctx init`)", path)
 	}
 	if err != nil {
 		return nil, fmt.Errorf("reading store: %w", err)
