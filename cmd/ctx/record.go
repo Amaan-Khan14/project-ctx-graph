@@ -60,11 +60,22 @@ func recordCtx(args []string) error {
 		Note:       *note,
 	}
 
-	if _, _, err := projectcontext.Record(store, in, time.Now()); err != nil {
+	k, created, err := projectcontext.Record(store, in, time.Now())
+	if err != nil {
 		return err
 	}
 
-	return store.Save(knowledgeFilePath)
+	if err := store.Save(knowledgeFilePath); err != nil {
+		return err
+	}
+
+	if created {
+		fmt.Printf("recorded %s\n", *key)
+	} else {
+		fmt.Printf("updated %s (evidence: %d)\n", *key, len(k.Evidence))
+	}
+
+	return nil
 }
 
 func csv(s string) []string {
