@@ -23,7 +23,8 @@ func Query(s *Store, opts QueryOpts) []*Knowledge {
 		if k, ok := s.Knowledge[opts.Key]; ok {
 			return []*Knowledge{k}
 		}
-		return nil
+		// Always an empty slice, never nil: JSON renderers must see [].
+		return []*Knowledge{}
 	}
 
 	// When the caller gave Text or Paths, an entry needs a nonzero relevance
@@ -76,10 +77,15 @@ func Query(s *Store, opts QueryOpts) []*Knowledge {
 // scopeMatches counts (scope, path) pairs where one side is a segment-wise
 // path-prefix of the other. Both directions count: an entry scoped to a
 // directory matches a file in it, and an entry scoped to a file matches a
-// directory the caller is about to work in.
+// directory the caller is about to work in. A scope of "." (or "/") is
+// project-global and matches every path.
 func scopeMatches(scope, paths []string) int {
 	n := 0
 	for _, sc := range scope {
+		if sc == "." || sc == "./" || sc == "/" {
+			n += len(paths) // global scope matches every path
+			continue
+		}
 		for _, p := range paths {
 			if pathOverlap(sc, p) {
 				n++

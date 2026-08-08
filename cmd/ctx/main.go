@@ -32,6 +32,12 @@ func main() {
 			os.Exit(1)
 		}
 
+	case "explore":
+		if err := exploreCtx(os.Args[2:]); err != nil {
+			fmt.Fprintln(os.Stderr, "ctx explore:", err)
+			os.Exit(1)
+		}
+
 	default:
 		fmt.Fprintf(os.Stderr, "unknown command: %s\n\n", os.Args[1])
 		usage()
@@ -46,4 +52,5 @@ func usage() {
 	fmt.Fprintln(os.Stderr, "  init      initialize a new knowledge store")
 	fmt.Fprintln(os.Stderr, "  record    record a decision or observation")
 	fmt.Fprintln(os.Stderr, "  dispute   mark knowledge as disputed")
+	fmt.Fprintln(os.Stderr, "  explore   explore project knowledge")
 }

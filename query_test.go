@@ -100,7 +100,11 @@ func TestQueryExactKeyIgnoresStatus(t *testing.T) {
 }
 
 func TestQueryExactKeyMiss(t *testing.T) {
-	if got := Query(fixtureStore(), QueryOpts{Key: "nope"}); len(got) != 0 {
+	got := Query(fixtureStore(), QueryOpts{Key: "nope"})
+	if got == nil {
+		t.Fatal("expected empty slice, got nil (breaks JSON renderers)")
+	}
+	if len(got) != 0 {
 		t.Fatalf("expected empty, got %d", len(got))
 	}
 }
@@ -164,6 +168,18 @@ func TestScopeMatchHelper(t *testing.T) {
 		if got := pathOverlap(c.scope, c.path); got != c.want {
 			t.Errorf("pathOverlap(%q, %q) = %v, want %v", c.scope, c.path, got, c.want)
 		}
+	}
+}
+
+func TestScopeMatchesGlobal(t *testing.T) {
+	if n := scopeMatches([]string{"."}, []string{"any/thing.go"}); n != 1 {
+		t.Fatalf(`scope "." should match any path, got %d`, n)
+	}
+	if n := scopeMatches([]string{".", "mcp/"}, []string{"mcp/x.go"}); n != 2 {
+		t.Fatalf(`global + concrete scope should both match, got %d`, n)
+	}
+	if n := scopeMatches([]string{"."}, nil); n != 0 {
+		t.Fatalf(`global scope with no queried paths should score 0, got %d`, n)
 	}
 }
 
