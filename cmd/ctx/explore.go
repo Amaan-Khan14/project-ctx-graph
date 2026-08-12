@@ -26,9 +26,9 @@ func exploreCtx(args []string) error {
 		return fmt.Errorf("error parsing flags: %w", err)
 	}
 
-	_, knowledgeFilePath, err := getDir()
+	knowledgeFilePath, err := mustStore()
 	if err != nil {
-		return fmt.Errorf("error getting dir: %w", err)
+		return err
 	}
 
 	store, err := projectcontext.Load(knowledgeFilePath)

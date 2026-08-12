@@ -41,6 +41,8 @@ func initCtx(args []string) error {
 
 }
 
+// getDir resolves .ctx in the CURRENT directory only. init intentionally
+// never walks up — init creates; projectcontext.ResolveStore discovers.
 func getDir() (string, string, error) {
 	pwdDir, err := os.Getwd()
 	if err != nil {

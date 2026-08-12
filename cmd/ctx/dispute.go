@@ -26,7 +26,7 @@ func disputeCtx(args []string) error {
 		return fmt.Errorf("key is required")
 	}
 
-	_, knowledgeFilePath, err := getDir()
+	knowledgeFilePath, err := mustStore()
 	if err != nil {
 		return err
 	}

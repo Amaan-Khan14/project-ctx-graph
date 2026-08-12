@@ -1,8 +1,10 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
+	"projectcontext"
 )
 
 func main() {
@@ -38,11 +40,27 @@ func main() {
 			os.Exit(1)
 		}
 
+	case "serve":
+		if err := serveCtx(); err != nil {
+			fmt.Fprintln(os.Stderr, "ctx serve:", err)
+			os.Exit(1)
+		}
+
 	default:
 		fmt.Fprintf(os.Stderr, "unknown command: %s\n\n", os.Args[1])
 		usage()
 		os.Exit(1)
 	}
+}
+
+// mustStore resolves the nearest .ctx store walking up from cwd, with a
+// friendly error when none exists.
+func mustStore() (string, error) {
+	_, knowledgePath, err := projectcontext.ResolveStore()
+	if errors.Is(err, projectcontext.ErrNoStore) {
+		return "", fmt.Errorf("no .ctx store found walking up from cwd; run `ctx init`")
+	}
+	return knowledgePath, err
 }
 
 func usage() {
@@ -53,4 +71,5 @@ func usage() {
 	fmt.Fprintln(os.Stderr, "  record    record a decision or observation")
 	fmt.Fprintln(os.Stderr, "  dispute   mark knowledge as disputed")
 	fmt.Fprintln(os.Stderr, "  explore   explore project knowledge")
+	fmt.Fprintln(os.Stderr, "  serve     run MCP stdio server")
 }

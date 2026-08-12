@@ -40,7 +40,7 @@ func recordCtx(args []string) error {
 		return fmt.Errorf("scope is required")
 	}
 
-	_, knowledgeFilePath, err := getDir()
+	knowledgeFilePath, err := mustStore()
 	if err != nil {
 		return err
 	}

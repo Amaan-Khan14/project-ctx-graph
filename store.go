@@ -68,3 +68,35 @@ func (s *Store) Save(path string) error {
 	}
 	return nil
 }
+
+// ErrNoStore is returned by ResolveStore when no .ctx store is found walking
+// up from the working directory.
+var ErrNoStore = errors.New("no .ctx store found")
+
+// ResolveStore walks up from the current directory (git-style) looking for
+// .ctx/knowledge.json. The single resolver shared by the CLI and the MCP
+// server. Note: `ctx init` does NOT walk up — it creates in cwd only.
+func ResolveStore() (ctxDir, knowledgePath string, err error) {
+	dir, err := os.Getwd()
+	if err != nil {
+		return "", "", fmt.Errorf("getting current directory: %w", err)
+	}
+	for {
+		ctxDir = filepath.Join(dir, ".ctx")
+		knowledgePath = filepath.Join(ctxDir, "knowledge.json")
+
+		info, err := os.Stat(knowledgePath)
+		if err == nil && !info.IsDir() {
+			return ctxDir, knowledgePath, nil
+		}
+		if err != nil && !errors.Is(err, fs.ErrNotExist) {
+			return "", "", fmt.Errorf("checking %s: %w", knowledgePath, err)
+		}
+
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			return "", "", ErrNoStore
+		}
+		dir = parent
+	}
+}
