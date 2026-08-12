@@ -1,0 +1,222 @@
+{
+  "version": 1,
+  "knowledge": {
+    "cli.before-mcp": {
+      "key": "cli.before-mcp",
+      "kind": "decision",
+      "statement": "CLI built and dogfooded before any MCP wrapper; MCP is a thin adapter.",
+      "scope": [
+        "cmd/"
+      ],
+      "status": "active",
+      "evidence": [
+        {
+          "session": "m2-dogfood",
+          "at": "2026-08-08T16:28:45.270197+05:30"
+        }
+      ],
+      "created": "2026-08-08T16:28:45.270197+05:30",
+      "updated": "2026-08-08T16:28:45.270197+05:30"
+    },
+    "explore.render-blocks": {
+      "key": "explore.render-blocks",
+      "kind": "fact",
+      "statement": "Explore's human output renders one block per entry with visible status markers: non-active statuses appear as uppercase tags (SUPERSEDED, DISPUTED) in the header bracket; active entries show no marker.",
+      "scope": [
+        "cmd/ctx/explore.go"
+      ],
+      "status": "active",
+      "evidence": [
+        {
+          "session": "opencode",
+          "note": "Verified against renderHuman in cmd/ctx/explore.go.",
+          "at": "2026-08-12T15:05:00.762815+05:30"
+        }
+      ],
+      "created": "2026-08-12T15:05:00.762815+05:30",
+      "updated": "2026-08-12T15:05:00.762815+05:30"
+    },
+    "extract.build-own-pipeline": {
+      "key": "extract.build-own-pipeline",
+      "kind": "decision",
+      "statement": "Build our own LLM transcript-extraction pipeline.",
+      "scope": [
+        "."
+      ],
+      "status": "superseded",
+      "evidence": [
+        {
+          "session": "m2-dogfood",
+          "note": "initial position",
+          "at": "2026-08-08T16:28:45.250991+05:30"
+        }
+      ],
+      "created": "2026-08-08T16:28:45.250991+05:30",
+      "updated": "2026-08-08T16:28:45.255581+05:30"
+    },
+    "extract.smart-caller": {
+      "key": "extract.smart-caller",
+      "kind": "decision",
+      "statement": "The calling agent performs extraction; the store is a dumb bookkeeper.",
+      "scope": [
+        "."
+      ],
+      "status": "active",
+      "evidence": [
+        {
+          "session": "m2-dogfood",
+          "note": "reversed after design review",
+          "at": "2026-08-08T16:28:45.255581+05:30"
+        }
+      ],
+      "created": "2026-08-08T16:28:45.255581+05:30",
+      "updated": "2026-08-08T16:28:45.255581+05:30"
+    },
+    "merge.deterministic-rules": {
+      "key": "merge.deterministic-rules",
+      "kind": "decision",
+      "statement": "Merge never infers; disputes are caller-explicit, never auto-resolved.",
+      "scope": [
+        "merge.go"
+      ],
+      "status": "active",
+      "evidence": [
+        {
+          "session": "m2-dogfood",
+          "at": "2026-08-08T16:28:45.259273+05:30"
+        },
+        {
+          "session": "opencode",
+          "note": "Reconfirmed: \"merge never infers anything.\"",
+          "at": "2026-08-12T15:05:23.084561+05:30"
+        },
+        {
+          "session": "opencode",
+          "note": "Reconfirmed again: \"merge never infers anything.\"",
+          "at": "2026-08-12T15:05:36.912416+05:30"
+        }
+      ],
+      "created": "2026-08-08T16:28:45.259273+05:30",
+      "updated": "2026-08-12T15:05:36.912416+05:30"
+    },
+    "merge.key-identity": {
+      "key": "merge.key-identity",
+      "kind": "decision",
+      "statement": "Identity is caller-chosen stable keys, not sentence normalization; key = topic.",
+      "scope": [
+        "merge.go"
+      ],
+      "status": "active",
+      "evidence": [
+        {
+          "session": "m2-dogfood",
+          "at": "2026-08-08T16:28:45.262774+05:30"
+        }
+      ],
+      "created": "2026-08-08T16:28:45.262774+05:30",
+      "updated": "2026-08-08T16:28:45.262774+05:30"
+    },
+    "onboarding.agents-snippet": {
+      "key": "onboarding.agents-snippet",
+      "kind": "decision",
+      "statement": "ctx init bootstraps AGENTS.md with marker-delimited ctx instructions (ctx:begin/end markers); idempotent; init store-refusal unchanged; --no-agents opts out.",
+      "scope": [
+        "cmd/ctx/"
+      ],
+      "status": "active",
+      "evidence": [
+        {
+          "session": "m4-build",
+          "note": "M4 implementation",
+          "at": "2026-08-12T15:14:20.279656+05:30"
+        }
+      ],
+      "created": "2026-08-12T15:14:20.279656+05:30",
+      "updated": "2026-08-12T15:14:20.279656+05:30"
+    },
+    "scope.global-retained": {
+      "key": "scope.global-retained",
+      "kind": "decision",
+      "statement": "Global '.' scope matching is retained: project-wide knowledge must surface on any path query. Scope '.' (or '/') matches every path.",
+      "scope": [
+        "query.go"
+      ],
+      "status": "active",
+      "evidence": [
+        {
+          "session": "opencode",
+          "note": "Reverses scope.no-global-matching, which was a synthetic acceptance-test artifact (prompt #5), not a real decision. Confirmed by project owner.",
+          "at": "2026-08-12T15:08:37.422849+05:30"
+        }
+      ],
+      "created": "2026-08-12T15:08:37.422849+05:30",
+      "updated": "2026-08-12T15:08:37.422849+05:30"
+    },
+    "scope.no-global-matching": {
+      "key": "scope.no-global-matching",
+      "kind": "decision",
+      "statement": "Global scope ('.') matching was a mistake: knowledge entries must name concrete paths, and query's '.'-matches-everything special case should be removed. No prior decision endorsed global scopes — the convention existed only in code and data.",
+      "scope": [
+        "query.go"
+      ],
+      "status": "superseded",
+      "evidence": [
+        {
+          "session": "opencode",
+          "note": "Requested as a replacement, but ctx_explore found no existing scope-related decision to supersede.",
+          "at": "2026-08-12T15:06:21.967333+05:30"
+        }
+      ],
+      "created": "2026-08-12T15:06:21.967333+05:30",
+      "updated": "2026-08-12T15:08:37.422849+05:30"
+    },
+    "storage.git-as-history": {
+      "key": "storage.git-as-history",
+      "kind": "decision",
+      "statement": "knowledge.json is git-committed; git is the history of record - no event log.",
+      "scope": [
+        "store.go"
+      ],
+      "status": "active",
+      "evidence": [
+        {
+          "session": "m2-dogfood",
+          "at": "2026-08-08T16:28:45.266+05:30"
+        }
+      ],
+      "created": "2026-08-08T16:28:45.266+05:30",
+      "updated": "2026-08-08T16:28:45.266+05:30"
+    },
+    "structure.lazy-dirs": {
+      "key": "structure.lazy-dirs",
+      "kind": "decision",
+      "statement": "Directories are created by code that demands them; internal/mcp/ appears at M3.",
+      "scope": [
+        "."
+      ],
+      "status": "active",
+      "evidence": [
+        {
+          "session": "m2-dogfood",
+          "at": "2026-08-08T16:28:45.273096+05:30"
+        }
+      ],
+      "created": "2026-08-08T16:28:45.273096+05:30",
+      "updated": "2026-08-08T16:28:45.273096+05:30"
+    }
+  },
+  "edges": [
+    {
+      "type": "supersedes",
+      "from": "extract.smart-caller",
+      "to": "extract.build-own-pipeline",
+      "at": "2026-08-08T16:28:45.255581+05:30"
+    },
+    {
+      "type": "supersedes",
+      "from": "scope.global-retained",
+      "to": "scope.no-global-matching",
+      "at": "2026-08-12T15:08:37.422849+05:30"
+    }
+  ]
+}
