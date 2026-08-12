@@ -12,6 +12,7 @@ import (
 func initCtx(args []string) error {
 	fs := flag.NewFlagSet("init", flag.ExitOnError)
 	force := fs.Bool("force", false, "overwrite existing store")
+	noAgents := fs.Bool("no-agents", false, "do not touch AGENTS.md")
 
 	if err := fs.Parse(args); err != nil {
 		return err
@@ -21,9 +22,13 @@ func initCtx(args []string) error {
 	if err != nil {
 		return err
 	}
+	repoDir := filepath.Dir(ctxDir)
 
 	if _, err := os.Stat(knowledgeFilePath); err == nil {
 		if !*force {
+			// Refusal protects the store; onboarding is non-destructive
+			// and still runs so existing projects get AGENTS.md.
+			onboardAgents(repoDir, *noAgents)
 			return fmt.Errorf("knowledge store already exists at %s (use --force to overwrite)", knowledgeFilePath)
 		}
 	} else if !errors.Is(err, os.ErrNotExist) {
@@ -37,8 +42,25 @@ func initCtx(args []string) error {
 	}
 
 	fmt.Printf("initialized ctx at %s\n", ctxDir)
+	onboardAgents(repoDir, *noAgents)
 	return nil
 
+}
+
+// onboardAgents ensures AGENTS.md carries the ctx snippet. Failures warn but
+// never fail init — the store is the critical artifact.
+func onboardAgents(repoDir string, skip bool) {
+	if skip {
+		return
+	}
+	outcome, err := ensureAgentsSnippet(repoDir)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "warning: AGENTS.md not updated: %v\n", err)
+		return
+	}
+	if outcome != "present" {
+		fmt.Printf("AGENTS.md %s with ctx instructions\n", outcome)
+	}
 }
 
 // getDir resolves .ctx in the CURRENT directory only. init intentionally

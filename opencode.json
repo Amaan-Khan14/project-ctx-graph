@@ -1,0 +1,10 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "ctx": {
+      "type": "local",
+      "command": ["/Users/amaan/Projects/context-graph/bin/ctx", "serve"],
+      "enabled": true
+    }
+  }
+}
