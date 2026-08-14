@@ -9,7 +9,7 @@ import (
 )
 
 func TestMergeOpencodeJSON(t *testing.T) {
-	bin := "/home/u/.local/bin/ctx"
+	bin := "/home/u/.local/bin/codedocket"
 
 	// empty file
 	merged, changed, err := mergeOpencodeJSON(nil, bin)
@@ -21,7 +21,7 @@ func TestMergeOpencodeJSON(t *testing.T) {
 		t.Fatal(err)
 	}
 	mcp := root["mcp"].(map[string]interface{})
-	entry := mcp["ctx"].(map[string]interface{})
+	entry := mcp["codedocket"].(map[string]interface{})
 	if entry["type"] != "local" || entry["enabled"] != true {
 		t.Fatalf("entry: %+v", entry)
 	}
@@ -45,8 +45,8 @@ func TestMergeOpencodeJSON(t *testing.T) {
 	if _, ok := mcp2["codegraph"]; !ok {
 		t.Fatal("existing sibling server lost")
 	}
-	if _, ok := mcp2["ctx"]; !ok {
-		t.Fatal("ctx not added")
+	if _, ok := mcp2["codedocket"]; !ok {
+		t.Fatal("codedocket not added")
 	}
 
 	// idempotent: merging the merged output reports unchanged
@@ -68,7 +68,7 @@ func TestMergeOpencodeJSON(t *testing.T) {
 }
 
 func TestMergeMCPServersJSON(t *testing.T) {
-	bin := "/x/ctx"
+	bin := "/x/codedocket"
 	merged, changed, err := mergeMCPServersJSON(nil, bin)
 	if err != nil || !changed {
 		t.Fatalf("changed=%v err=%v", changed, err)
@@ -76,7 +76,7 @@ func TestMergeMCPServersJSON(t *testing.T) {
 	var root map[string]interface{}
 	json.Unmarshal(merged, &root)
 	servers := root["mcpServers"].(map[string]interface{})
-	entry := servers["ctx"].(map[string]interface{})
+	entry := servers["codedocket"].(map[string]interface{})
 	if entry["command"] != bin || entry["args"].([]interface{})[0] != "serve" {
 		t.Fatalf("entry: %+v", entry)
 	}
@@ -87,13 +87,13 @@ func TestMergeMCPServersJSON(t *testing.T) {
 }
 
 func TestAppendCodexTOML(t *testing.T) {
-	bin := "/x/ctx"
+	bin := "/x/codedocket"
 
 	out, changed, err := appendCodexTOML(nil, bin)
 	if err != nil || !changed {
 		t.Fatalf("empty: changed=%v err=%v", changed, err)
 	}
-	if !strings.HasPrefix(string(out), "[mcp_servers.ctx]") {
+	if !strings.HasPrefix(string(out), "[mcp_servers.codedocket]") {
 		t.Fatalf("block placement:\n%s", out)
 	}
 
@@ -102,11 +102,11 @@ func TestAppendCodexTOML(t *testing.T) {
 	if !changed2 {
 		t.Fatal("expected change")
 	}
-	if !strings.Contains(string(out2), "[profiles.default]") || !strings.Contains(string(out2), "[mcp_servers.ctx]") {
+	if !strings.Contains(string(out2), "[profiles.default]") || !strings.Contains(string(out2), "[mcp_servers.codedocket]") {
 		t.Fatalf("existing TOML not preserved:\n%s", out2)
 	}
 
-	if _, changed3, _ := appendCodexTOML(out2, "/other/path/ctx"); changed3 {
+	if _, changed3, _ := appendCodexTOML(out2, "/other/path/codedocket"); changed3 {
 		t.Fatal("second append must be no-op regardless of binPath")
 	}
 }

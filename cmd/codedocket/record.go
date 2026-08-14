@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/Amaan-Khan14/project-ctx-graph"
+	"github.com/Amaan-Khan14/codedocket"
 	"strings"
 	"time"
 )
@@ -45,12 +45,12 @@ func recordCtx(args []string) error {
 		return err
 	}
 
-	store, err := projectcontext.Load(knowledgeFilePath)
+	store, err := codedocket.Load(knowledgeFilePath)
 	if err != nil {
 		return err
 	}
 
-	in := projectcontext.RecordInput{
+	in := codedocket.RecordInput{
 		Key:        *key,
 		Kind:       *kind,
 		Statement:  *statement,
@@ -60,7 +60,7 @@ func recordCtx(args []string) error {
 		Note:       *note,
 	}
 
-	k, created, err := projectcontext.Record(store, in, time.Now())
+	k, created, err := codedocket.Record(store, in, time.Now())
 	if err != nil {
 		return err
 	}

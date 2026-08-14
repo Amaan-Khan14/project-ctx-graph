@@ -2,7 +2,7 @@ package mcp
 
 import (
 	"encoding/json"
-	"github.com/Amaan-Khan14/project-ctx-graph"
+	"github.com/Amaan-Khan14/codedocket"
 	"os"
 	"path/filepath"
 	"strings"
@@ -19,7 +19,7 @@ func TestHandleMessage(t *testing.T) {
 		{
 			name:     "initialize echoes version",
 			input:    `{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-03-26","clientInfo":{"name":"test-client","version":"1.0"}}}`,
-			contains: []string{`"protocolVersion":"2025-03-26"`, `"name":"ctx"`, `"version":"0.1.0"`},
+			contains: []string{`"protocolVersion":"2025-03-26"`, `"name":"codedocket"`, `"version":"0.1.0"`},
 		},
 		{
 			name:    "notification returns nil",
@@ -29,7 +29,7 @@ func TestHandleMessage(t *testing.T) {
 		{
 			name:     "tools/list returns 3 tools",
 			input:    `{"jsonrpc":"2.0","id":2,"method":"tools/list"}`,
-			contains: []string{`"ctx_explore"`, `"ctx_record"`, `"ctx_dispute"`, `"inputSchema"`},
+			contains: []string{`"codedocket_explore"`, `"codedocket_record"`, `"codedocket_dispute"`, `"inputSchema"`},
 		},
 		{
 			name:     "unknown method returns error",
@@ -71,12 +71,12 @@ func TestHandleMessage(t *testing.T) {
 func TestToolCalls(t *testing.T) {
 	// Set up temp store
 	tmpDir := t.TempDir()
-	ctxDir := filepath.Join(tmpDir, ".ctx")
+	ctxDir := filepath.Join(tmpDir, ".codedocket")
 	if err := os.MkdirAll(ctxDir, 0755); err != nil {
 		t.Fatal(err)
 	}
 	knowledgePath := filepath.Join(ctxDir, "knowledge.json")
-	store := projectcontext.NewStore()
+	store := codedocket.NewStore()
 	if err := store.Save(knowledgePath); err != nil {
 		t.Fatal(err)
 	}
@@ -93,7 +93,7 @@ func TestToolCalls(t *testing.T) {
 	handleMessage([]byte(initMsg))
 
 	t.Run("record creates entry", func(t *testing.T) {
-		msg := `{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"ctx_record","arguments":{"key":"test.key","kind":"decision","statement":"Test statement","scope":["."]}}}`
+		msg := `{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"codedocket_record","arguments":{"key":"test.key","kind":"decision","statement":"Test statement","scope":["."]}}}`
 		resp := handleMessage([]byte(msg))
 
 		if !strings.Contains(string(resp), "recorded test.key") {
@@ -101,7 +101,7 @@ func TestToolCalls(t *testing.T) {
 		}
 
 		// Verify file was written
-		store, err := projectcontext.Load(knowledgePath)
+		store, err := codedocket.Load(knowledgePath)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -111,7 +111,7 @@ func TestToolCalls(t *testing.T) {
 	})
 
 	t.Run("explore returns recorded entry", func(t *testing.T) {
-		msg := `{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"ctx_explore","arguments":{"key":"test.key"}}}`
+		msg := `{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"codedocket_explore","arguments":{"key":"test.key"}}}`
 		resp := handleMessage([]byte(msg))
 
 		if !strings.Contains(string(resp), "test.key") || !strings.Contains(string(resp), "Test statement") {
@@ -136,7 +136,7 @@ func TestToolCalls(t *testing.T) {
 	})
 
 	t.Run("record with invalid kind returns error", func(t *testing.T) {
-		msg := `{"jsonrpc":"2.0","id":4,"method":"tools/call","params":{"name":"ctx_record","arguments":{"key":"bad.key","kind":"invalid","statement":"Test","scope":["."]}}}`
+		msg := `{"jsonrpc":"2.0","id":4,"method":"tools/call","params":{"name":"codedocket_record","arguments":{"key":"bad.key","kind":"invalid","statement":"Test","scope":["."]}}}`
 		resp := handleMessage([]byte(msg))
 
 		if !strings.Contains(string(resp), "isError") {
@@ -155,7 +155,7 @@ func TestToolCalls(t *testing.T) {
 }
 
 func TestNoStore(t *testing.T) {
-	// Run from a directory without .ctx
+	// Run from a directory without .codedocket
 	tmpDir := t.TempDir()
 	origDir, _ := os.Getwd()
 	defer os.Chdir(origDir)
@@ -163,10 +163,10 @@ func TestNoStore(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	msg := `{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"ctx_explore","arguments":{}}}`
+	msg := `{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"codedocket_explore","arguments":{}}}`
 	resp := handleMessage([]byte(msg))
 
-	if !strings.Contains(string(resp), "no .ctx store found") || !strings.Contains(string(resp), "ctx init") {
+	if !strings.Contains(string(resp), "no .codedocket store found") || !strings.Contains(string(resp), "codedocket init") {
 		t.Errorf("expected no store error with hint, got: %s", resp)
 	}
 }

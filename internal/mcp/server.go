@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
-	"github.com/Amaan-Khan14/project-ctx-graph"
+	"github.com/Amaan-Khan14/codedocket"
 	"io"
 	"os"
 	"time"
@@ -84,7 +84,7 @@ func handleInitialize(id *json.RawMessage, params json.RawMessage) []byte {
 		"protocolVersion": req.ProtocolVersion,
 		"capabilities":    map[string]interface{}{"tools": map[string]interface{}{}},
 		"serverInfo": map[string]string{
-			"name":    "ctx",
+			"name":    "codedocket",
 			"version": ServerInfoVersion,
 		},
 	}
@@ -95,8 +95,8 @@ func handleInitialize(id *json.RawMessage, params json.RawMessage) []byte {
 func handleToolsList(id *json.RawMessage) []byte {
 	tools := []map[string]interface{}{
 		{
-			"name":        "ctx_explore",
-			"description": "Retrieve project knowledge before acting: what this project already knows, decided, tried, or disputes. Pass paths you are about to modify to surface scoped constraints; query for topics; key for exact lookup; include_superseded reveals historical positions. Call before editing unfamiliar areas and before ctx_record.",
+			"name":        "codedocket_explore",
+			"description": "Retrieve project knowledge before acting: what this project already knows, decided, tried, or disputes. Pass paths you are about to modify to surface scoped constraints; query for topics; key for exact lookup; include_superseded reveals historical positions. Call before editing unfamiliar areas and before codedocket_record.",
 			"inputSchema": map[string]interface{}{
 				"type": "object",
 				"properties": map[string]interface{}{
@@ -126,8 +126,8 @@ func handleToolsList(id *json.RawMessage) []byte {
 			},
 		},
 		{
-			"name":        "ctx_record",
-			"description": "Record project knowledge: decisions, constraints, bugs, assumptions, rationale, facts. WORKFLOW: first call ctx_explore with a related query to avoid duplicates; if the topic exists, record again with the same key to confirm/update it; if a decision replaces an older one, pass the old key in supersedes. Key rules: stable dot.case slug naming the TOPIC (one decision per key); statement = current position, 1-2 sentences; scope = paths this knowledge applies to ('.' for project-wide).",
+			"name":        "codedocket_record",
+			"description": "Record project knowledge: decisions, constraints, bugs, assumptions, rationale, facts. WORKFLOW: first call codedocket_explore with a related query to avoid duplicates; if the topic exists, record again with the same key to confirm/update it; if a decision replaces an older one, pass the old key in supersedes. Key rules: stable dot.case slug naming the TOPIC (one decision per key); statement = current position, 1-2 sentences; scope = paths this knowledge applies to ('.' for project-wide).",
 			"inputSchema": map[string]interface{}{
 				"type":     "object",
 				"required": []string{"key", "kind", "statement", "scope"},
@@ -167,8 +167,8 @@ func handleToolsList(id *json.RawMessage) []byte {
 			},
 		},
 		{
-			"name":        "ctx_dispute",
-			"description": "Flag knowledge as contested when you believe an entry is wrong but cannot yet replace it; keeps it visible for humans. To CORRECT knowledge use ctx_record (same key, or new key + supersedes).",
+			"name":        "codedocket_dispute",
+			"description": "Flag knowledge as contested when you believe an entry is wrong but cannot yet replace it; keeps it visible for humans. To CORRECT knowledge use codedocket_record (same key, or new key + supersedes).",
 			"inputSchema": map[string]interface{}{
 				"type":     "object",
 				"required": []string{"key"},
@@ -206,35 +206,35 @@ func handleToolsCall(id *json.RawMessage, params json.RawMessage) []byte {
 
 	// Validate the tool name before touching the filesystem.
 	switch req.Name {
-	case "ctx_explore", "ctx_record", "ctx_dispute":
+	case "codedocket_explore", "codedocket_record", "codedocket_dispute":
 	default:
 		return errorResponse(id, invalidParams, fmt.Sprintf("unknown tool: %s", req.Name))
 	}
 
 	// Resolve the store fresh for EVERY call: the file is shared mutable
 	// state and other sessions may write between our calls.
-	_, knowledgePath, err := projectcontext.ResolveStore()
+	_, knowledgePath, err := codedocket.ResolveStore()
 	if err != nil {
-		return toolError(id, "no .ctx store found walking up from cwd; run `ctx init`")
+		return toolError(id, "no .codedocket store found walking up from cwd; run `codedocket init`")
 	}
 
 	switch req.Name {
-	case "ctx_explore":
+	case "codedocket_explore":
 		return handleExplore(id, knowledgePath, req.Arguments)
-	case "ctx_record":
+	case "codedocket_record":
 		return handleRecord(id, knowledgePath, req.Arguments)
-	default: // ctx_dispute
+	default: // codedocket_dispute
 		return handleDispute(id, knowledgePath, req.Arguments)
 	}
 }
 
 func handleExplore(id *json.RawMessage, knowledgePath string, args map[string]interface{}) []byte {
-	store, err := projectcontext.Load(knowledgePath)
+	store, err := codedocket.Load(knowledgePath)
 	if err != nil {
 		return toolError(id, fmt.Sprintf("loading store: %v", err))
 	}
 
-	opts := projectcontext.QueryOpts{}
+	opts := codedocket.QueryOpts{}
 
 	if v, ok := args["query"].(string); ok {
 		opts.Text = v
@@ -252,7 +252,7 @@ func handleExplore(id *json.RawMessage, knowledgePath string, args map[string]in
 		opts.IncludeSuperseded = v
 	}
 
-	results := projectcontext.Query(store, opts)
+	results := codedocket.Query(store, opts)
 
 	jsonBytes, err := json.MarshalIndent(results, "", "  ")
 	if err != nil {
@@ -263,7 +263,7 @@ func handleExplore(id *json.RawMessage, knowledgePath string, args map[string]in
 }
 
 func handleRecord(id *json.RawMessage, knowledgePath string, args map[string]interface{}) []byte {
-	store, err := projectcontext.Load(knowledgePath)
+	store, err := codedocket.Load(knowledgePath)
 	if err != nil {
 		return toolError(id, fmt.Sprintf("loading store: %v", err))
 	}
@@ -281,7 +281,7 @@ func handleRecord(id *json.RawMessage, knowledgePath string, args map[string]int
 	scope := toStringSlice(args["scope"])
 	supersedes := toStringSlice(args["supersedes"])
 
-	input := projectcontext.RecordInput{
+	input := codedocket.RecordInput{
 		Key:        key,
 		Kind:       kind,
 		Statement:  statement,
@@ -291,7 +291,7 @@ func handleRecord(id *json.RawMessage, knowledgePath string, args map[string]int
 		Note:       note,
 	}
 
-	k, created, err := projectcontext.Record(store, input, time.Now())
+	k, created, err := codedocket.Record(store, input, time.Now())
 	if err != nil {
 		return toolError(id, err.Error())
 	}
@@ -311,7 +311,7 @@ func handleRecord(id *json.RawMessage, knowledgePath string, args map[string]int
 }
 
 func handleDispute(id *json.RawMessage, knowledgePath string, args map[string]interface{}) []byte {
-	store, err := projectcontext.Load(knowledgePath)
+	store, err := codedocket.Load(knowledgePath)
 	if err != nil {
 		return toolError(id, fmt.Sprintf("loading store: %v", err))
 	}
@@ -324,7 +324,7 @@ func handleDispute(id *json.RawMessage, knowledgePath string, args map[string]in
 		session = clientName
 	}
 
-	if _, err := projectcontext.Dispute(store, key, session, note, time.Now()); err != nil {
+	if _, err := codedocket.Dispute(store, key, session, note, time.Now()); err != nil {
 		return toolError(id, err.Error())
 	}
 

@@ -23,7 +23,7 @@ func TestEnsureAgentsSnippetCreates(t *testing.T) {
 		t.Fatal(err)
 	}
 	s := string(data)
-	for _, want := range []string{markerBegin, markerEnd, "ctx_explore", "ctx_record", "knowledge.json", "supersedes"} {
+	for _, want := range []string{markerBegin, markerEnd, "codedocket_explore", "codedocket_record", "knowledge.json", "supersedes"} {
 		if !strings.Contains(s, want) {
 			t.Errorf("snippet missing %q", want)
 		}

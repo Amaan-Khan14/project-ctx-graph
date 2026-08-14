@@ -2,7 +2,7 @@ package mcp
 
 import (
 	"bytes"
-	"github.com/Amaan-Khan14/project-ctx-graph"
+	"github.com/Amaan-Khan14/codedocket"
 	"os"
 	"path/filepath"
 	"strings"
@@ -12,12 +12,12 @@ import (
 // TestIntegrationWorkflow tests the complete MCP workflow: initialize → record → explore → dispute
 func TestIntegrationWorkflow(t *testing.T) {
 	tmpDir := t.TempDir()
-	ctxDir := filepath.Join(tmpDir, ".ctx")
+	ctxDir := filepath.Join(tmpDir, ".codedocket")
 	if err := os.MkdirAll(ctxDir, 0755); err != nil {
 		t.Fatal(err)
 	}
 	knowledgePath := filepath.Join(ctxDir, "knowledge.json")
-	store := projectcontext.NewStore()
+	store := codedocket.NewStore()
 	if err := store.Save(knowledgePath); err != nil {
 		t.Fatal(err)
 	}
@@ -35,11 +35,11 @@ func TestIntegrationWorkflow(t *testing.T) {
 	// Write a sequence of messages
 	messages := []string{
 		`{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-03-26","clientInfo":{"name":"integration-test","version":"1.0"}}}`,
-		`{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"ctx_record","arguments":{"key":"api.versioning","kind":"decision","statement":"Use semantic versioning for all APIs","scope":["api/"]}}}`,
-		`{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"ctx_record","arguments":{"key":"db.migration","kind":"constraint","statement":"All migrations must be reversible","scope":["db/migrations/"]}}}`,
-		`{"jsonrpc":"2.0","id":4,"method":"tools/call","params":{"name":"ctx_explore","arguments":{"query":"versioning"}}}`,
-		`{"jsonrpc":"2.0","id":5,"method":"tools/call","params":{"name":"ctx_dispute","arguments":{"key":"api.versioning","note":"Should we use calver instead?"}}}`,
-		`{"jsonrpc":"2.0","id":6,"method":"tools/call","params":{"name":"ctx_explore","arguments":{"paths":["api/handler.go"]}}}`,
+		`{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"codedocket_record","arguments":{"key":"api.versioning","kind":"decision","statement":"Use semantic versioning for all APIs","scope":["api/"]}}}`,
+		`{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"codedocket_record","arguments":{"key":"db.migration","kind":"constraint","statement":"All migrations must be reversible","scope":["db/migrations/"]}}}`,
+		`{"jsonrpc":"2.0","id":4,"method":"tools/call","params":{"name":"codedocket_explore","arguments":{"query":"versioning"}}}`,
+		`{"jsonrpc":"2.0","id":5,"method":"tools/call","params":{"name":"codedocket_dispute","arguments":{"key":"api.versioning","note":"Should we use calver instead?"}}}`,
+		`{"jsonrpc":"2.0","id":6,"method":"tools/call","params":{"name":"codedocket_explore","arguments":{"paths":["api/handler.go"]}}}`,
 	}
 
 	for _, msg := range messages {
@@ -60,7 +60,7 @@ func TestIntegrationWorkflow(t *testing.T) {
 	}
 
 	// Check initialize response
-	if !strings.Contains(lines[0], "ctx") || !strings.Contains(lines[0], "0.1.0") {
+	if !strings.Contains(lines[0], "codedocket") || !strings.Contains(lines[0], "0.1.0") {
 		t.Errorf("initialize response invalid: %s", lines[0])
 	}
 
@@ -90,7 +90,7 @@ func TestIntegrationWorkflow(t *testing.T) {
 	}
 
 	// Verify store state
-	finalStore, err := projectcontext.Load(knowledgePath)
+	finalStore, err := codedocket.Load(knowledgePath)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -100,7 +100,7 @@ func TestIntegrationWorkflow(t *testing.T) {
 	}
 
 	// Verify disputed status
-	results := projectcontext.Query(finalStore, projectcontext.QueryOpts{Key: "api.versioning"})
+	results := codedocket.Query(finalStore, codedocket.QueryOpts{Key: "api.versioning"})
 	if len(results) != 1 || results[0].Status != "disputed" {
 		t.Error("api.versioning should be disputed")
 	}

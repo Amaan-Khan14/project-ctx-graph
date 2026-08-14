@@ -1,4 +1,4 @@
-package projectcontext
+package codedocket
 
 import (
 	"testing"
@@ -11,7 +11,7 @@ func ts(h int) time.Time { return t1.Add(time.Duration(h) * time.Hour) }
 
 // fixtureStore builds the worked-example store from TASKS.md:
 //
-//	storage.format        decision    "Single JSON file, git-committed."     [.projectcontext/]  active      ev3  t5
+//	storage.format        decision    "Single JSON file, git-committed."     [.codedocket/]  active      ev3  t5
 //	merge.deterministic   decision    "Merge never infers; explicit only."   [internal/]         active      ev2  t4
 //	merge.conflicts       assumption  "Conflicts will be rare at small scale." [internal/merge/] disputed    ev1  t3
 //	extract.smart-caller  decision    "The calling agent performs extraction." [mcp/]            active      ev1  t6
@@ -34,7 +34,7 @@ func fixtureStore() *Store {
 			Updated:   updated,
 		}
 	}
-	add("storage.format", "decision", "Single JSON file, git-committed.", StatusActive, []string{".projectcontext/"}, 3, ts(5))
+	add("storage.format", "decision", "Single JSON file, git-committed.", StatusActive, []string{".codedocket/"}, 3, ts(5))
 	add("merge.deterministic", "decision", "Merge never infers; explicit only.", StatusActive, []string{"internal/"}, 2, ts(4))
 	add("merge.conflicts", "assumption", "Conflicts will be rare at small scale.", StatusDisputed, []string{"internal/merge/"}, 1, ts(3))
 	add("extract.smart-caller", "decision", "The calling agent performs extraction.", StatusActive, []string{"mcp/"}, 1, ts(6))
@@ -161,7 +161,7 @@ func TestScopeMatchHelper(t *testing.T) {
 		{"internal/", "internal/", true},
 		{"internal/merge/", "internal/merge.go", false}, // segment boundary: dir != file
 		{"internal/mer/", "internal/merge/x.go", false}, // naive HasPrefix would lie
-		{".projectcontext/", "internal/merge.go", false},
+		{".codedocket/", "internal/merge.go", false},
 		{".", "internal/merge.go", false}, // root scopes match nothing
 	}
 	for _, c := range cases {

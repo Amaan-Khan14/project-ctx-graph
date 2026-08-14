@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"github.com/Amaan-Khan14/project-ctx-graph"
+	"github.com/Amaan-Khan14/codedocket"
 	"strings"
 )
 
@@ -31,12 +31,12 @@ func exploreCtx(args []string) error {
 		return err
 	}
 
-	store, err := projectcontext.Load(knowledgeFilePath)
+	store, err := codedocket.Load(knowledgeFilePath)
 	if err != nil {
 		return fmt.Errorf("error loading knowledge.json: %w", err)
 	}
 
-	in := projectcontext.QueryOpts{
+	in := codedocket.QueryOpts{
 		Text:              *query,
 		Paths:             csv(*path),
 		Kind:              *kind,
@@ -44,7 +44,7 @@ func exploreCtx(args []string) error {
 		IncludeSuperseded: *includeSuperseded,
 	}
 
-	results := projectcontext.Query(store, in)
+	results := codedocket.Query(store, in)
 
 	if *jsonOutput {
 		data, err := json.MarshalIndent(results, "", "  ")
@@ -66,7 +66,7 @@ func exploreCtx(args []string) error {
 	return nil
 }
 
-func renderHuman(knowledge []*projectcontext.Knowledge) string {
+func renderHuman(knowledge []*codedocket.Knowledge) string {
 	var out strings.Builder
 
 	for i, k := range knowledge {

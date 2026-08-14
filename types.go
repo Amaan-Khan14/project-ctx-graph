@@ -1,6 +1,6 @@
-// Package projectcontext accumulates project understanding across coding
+// Package codedocket accumulates project understanding across coding
 // sessions: a dumb store with careful bookkeeping, driven by smart callers.
-package projectcontext
+package codedocket
 
 import "time"
 

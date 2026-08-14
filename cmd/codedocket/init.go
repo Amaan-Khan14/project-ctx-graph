@@ -4,7 +4,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"github.com/Amaan-Khan14/project-ctx-graph"
+	"github.com/Amaan-Khan14/codedocket"
 	"os"
 	"path/filepath"
 )
@@ -35,19 +35,27 @@ func initCtx(args []string) error {
 		return fmt.Errorf("checking store: %w", err)
 	}
 
-	store := projectcontext.NewStore()
+	legacyPath := filepath.Join(repoDir, ".ctx", "knowledge.json")
+	if _, err := os.Stat(legacyPath); err == nil && !*force {
+		onboardAgents(repoDir, *noAgents)
+		return fmt.Errorf("legacy knowledge store already exists at %s; move it to %s or use --force to create a new CodeDocket store", legacyPath, knowledgeFilePath)
+	} else if err != nil && !errors.Is(err, os.ErrNotExist) {
+		return fmt.Errorf("checking legacy store: %w", err)
+	}
+
+	store := codedocket.NewStore()
 
 	if err := store.Save(knowledgeFilePath); err != nil {
 		return fmt.Errorf("initializing knowledge store: %w", err)
 	}
 
-	fmt.Printf("initialized ctx at %s\n", ctxDir)
+	fmt.Printf("initialized codedocket at %s\n", ctxDir)
 	onboardAgents(repoDir, *noAgents)
 	return nil
 
 }
 
-// onboardAgents ensures AGENTS.md carries the ctx snippet. Failures warn but
+// onboardAgents ensures AGENTS.md carries the codedocket snippet. Failures warn but
 // never fail init — the store is the critical artifact.
 func onboardAgents(repoDir string, skip bool) {
 	if skip {
@@ -59,17 +67,17 @@ func onboardAgents(repoDir string, skip bool) {
 		return
 	}
 	if outcome != "present" {
-		fmt.Printf("AGENTS.md %s with ctx instructions\n", outcome)
+		fmt.Printf("AGENTS.md %s with codedocket instructions\n", outcome)
 	}
 }
 
-// getDir resolves .ctx in the CURRENT directory only. init intentionally
-// never walks up — init creates; projectcontext.ResolveStore discovers.
+// getDir resolves .codedocket in the CURRENT directory only. init intentionally
+// never walks up — init creates; codedocket.ResolveStore discovers.
 func getDir() (string, string, error) {
 	pwdDir, err := os.Getwd()
 	if err != nil {
 		return "", "", fmt.Errorf("getting current directory: %w", err)
 	}
-	ctxDir := filepath.Join(pwdDir, ".ctx")
+	ctxDir := filepath.Join(pwdDir, ".codedocket")
 	return ctxDir, filepath.Join(ctxDir, "knowledge.json"), nil
 }

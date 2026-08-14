@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	projectcontext "github.com/Amaan-Khan14/project-ctx-graph"
+	codedocket "github.com/Amaan-Khan14/codedocket"
 )
 
 // version is stamped by the release build (goreleaser ldflags); "dev" locally.
@@ -22,37 +22,37 @@ func main() {
 	case "init":
 
 		if err := initCtx(os.Args[2:]); err != nil {
-			fmt.Fprintln(os.Stderr, "ctx init:", err)
+			fmt.Fprintln(os.Stderr, "codedocket init:", err)
 			os.Exit(1)
 		}
 
 	case "record":
 		if err := recordCtx(os.Args[2:]); err != nil {
-			fmt.Fprintln(os.Stderr, "ctx record:", err)
+			fmt.Fprintln(os.Stderr, "codedocket record:", err)
 			os.Exit(1)
 		}
 
 	case "dispute":
 		if err := disputeCtx(os.Args[2:]); err != nil {
-			fmt.Fprintln(os.Stderr, "ctx dispute:", err)
+			fmt.Fprintln(os.Stderr, "codedocket dispute:", err)
 			os.Exit(1)
 		}
 
 	case "explore":
 		if err := exploreCtx(os.Args[2:]); err != nil {
-			fmt.Fprintln(os.Stderr, "ctx explore:", err)
+			fmt.Fprintln(os.Stderr, "codedocket explore:", err)
 			os.Exit(1)
 		}
 
 	case "setup":
 		if err := setupCtx(os.Args[2:]); err != nil {
-			fmt.Fprintln(os.Stderr, "ctx setup:", err)
+			fmt.Fprintln(os.Stderr, "codedocket setup:", err)
 			os.Exit(1)
 		}
 
 	case "serve":
 		if err := serveCtx(); err != nil {
-			fmt.Fprintln(os.Stderr, "ctx serve:", err)
+			fmt.Fprintln(os.Stderr, "codedocket serve:", err)
 			os.Exit(1)
 		}
 
@@ -66,18 +66,18 @@ func main() {
 	}
 }
 
-// mustStore resolves the nearest .ctx store walking up from cwd, with a
+// mustStore resolves the nearest .codedocket store walking up from cwd, with a
 // friendly error when none exists.
 func mustStore() (string, error) {
-	_, knowledgePath, err := projectcontext.ResolveStore()
-	if errors.Is(err, projectcontext.ErrNoStore) {
-		return "", fmt.Errorf("no .ctx store found walking up from cwd; run `ctx init`")
+	_, knowledgePath, err := codedocket.ResolveStore()
+	if errors.Is(err, codedocket.ErrNoStore) {
+		return "", fmt.Errorf("no .codedocket store found walking up from cwd; run `codedocket init`")
 	}
 	return knowledgePath, err
 }
 
 func usage() {
-	fmt.Fprintln(os.Stderr, "usage: ctx <command> [args...]")
+	fmt.Fprintln(os.Stderr, "usage: codedocket <command> [args...]")
 	fmt.Fprintln(os.Stderr)
 	fmt.Fprintln(os.Stderr, "commands:")
 	fmt.Fprintln(os.Stderr, "  init      initialize a new knowledge store")

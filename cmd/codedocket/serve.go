@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/Amaan-Khan14/project-ctx-graph/internal/mcp"
+	"github.com/Amaan-Khan14/codedocket/internal/mcp"
 	"os"
 )
 

@@ -53,7 +53,7 @@ var knownClients = []clientDef{
 	},
 }
 
-// mergeOpencodeJSON upserts mcp.ctx into opencode's { "mcp": { ... } } map,
+// mergeOpencodeJSON upserts mcp.codedocket into opencode's { "mcp": { ... } } map,
 // preserving all unrelated keys. Whole-file rewrite with sorted keys; a
 // .bak is made by the caller before writing.
 func mergeOpencodeJSON(existing []byte, binPath string) ([]byte, bool, error) {
@@ -62,10 +62,10 @@ func mergeOpencodeJSON(existing []byte, binPath string) ([]byte, bool, error) {
 		`{"type":"local","command":["`+binPath+`","serve"],"enabled":true}`), &want); err != nil {
 		return nil, false, err // binPath escaping bug; unreachable for sane paths
 	}
-	return mergeNestedMap(existing, "mcp", "ctx", want)
+	return mergeNestedMap(existing, "mcp", "codedocket", want)
 }
 
-// mergeMCPServersJSON upserts the { "mcpServers": { "ctx": ... } } shape used
+// mergeMCPServersJSON upserts the { "mcpServers": { "codedocket": ... } } shape used
 // by Claude Code and Cursor.
 func mergeMCPServersJSON(existing []byte, binPath string) ([]byte, bool, error) {
 	var want map[string]interface{}
@@ -73,7 +73,7 @@ func mergeMCPServersJSON(existing []byte, binPath string) ([]byte, bool, error) 
 		`{"command":"`+binPath+`","args":["serve"]}`), &want); err != nil {
 		return nil, false, err
 	}
-	return mergeNestedMap(existing, "mcpServers", "ctx", want)
+	return mergeNestedMap(existing, "mcpServers", "codedocket", want)
 }
 
 // mergeNestedMap upserts root[section][entry] = want into arbitrary JSON.
@@ -101,14 +101,14 @@ func mergeNestedMap(existing []byte, section, entry string, want map[string]inte
 	return append(out, '\n'), true, nil
 }
 
-// appendCodexTOML adds a [mcp_servers.ctx] block if absent. No TOML parser:
+// appendCodexTOML adds a [mcp_servers.codedocket] block if absent. No TOML parser:
 // presence detection is the literal section header; anything non-trivial is
 // deferred until a real need proves it.
 func appendCodexTOML(existing []byte, binPath string) ([]byte, bool, error) {
-	if bytes.Contains(existing, []byte("[mcp_servers.ctx]")) {
+	if bytes.Contains(existing, []byte("[mcp_servers.codedocket]")) {
 		return existing, false, nil
 	}
-	block := fmt.Sprintf("[mcp_servers.ctx]\ncommand = %q\nargs = [\"serve\"]\n", binPath)
+	block := fmt.Sprintf("[mcp_servers.codedocket]\ncommand = %q\nargs = [\"serve\"]\n", binPath)
 	trimmed := bytes.TrimRight(existing, "\n")
 	if len(bytes.TrimSpace(trimmed)) == 0 {
 		return []byte(block), true, nil

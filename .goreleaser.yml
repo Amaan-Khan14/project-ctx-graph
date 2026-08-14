@@ -1,11 +1,11 @@
 version: 2
 
-project_name: ctx
+project_name: codedocket
 
 builds:
-  - id: ctx
-    main: ./cmd/ctx
-    binary: ctx
+  - id: codedocket
+    main: ./cmd/codedocket
+    binary: codedocket
     goos: [darwin, linux, windows]
     goarch: [amd64, arm64]
     env:
@@ -13,10 +13,10 @@ builds:
     ldflags:
       - -s -w
       - -X main.version={{.Version}}
-      - -X github.com/Amaan-Khan14/project-ctx-graph/internal/mcp.ServerInfoVersion={{.Version}}
+      - -X github.com/Amaan-Khan14/codedocket/internal/mcp.ServerInfoVersion={{.Version}}
 
 archives:
-  - id: ctx
+  - id: codedocket
     formats: [tar.gz]
     name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}{{ with .Arm }}v{{ . }}{{ end }}"
     format_overrides:
@@ -44,7 +44,7 @@ release:
     ## MCP client config
 
     ```json
-    { "ctx": { "type": "local", "command": ["ctx", "serve"], "enabled": true } }
+    { "codedocket": { "type": "local", "command": ["codedocket", "serve"], "enabled": true } }
     ```
 
-    Then `cd your-project && ctx init`.
+    Then `cd your-project && codedocket init`.

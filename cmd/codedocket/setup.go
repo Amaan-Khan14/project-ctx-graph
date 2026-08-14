@@ -19,7 +19,7 @@ func setupCtx(args []string) error {
 	fl := flag.NewFlagSet("setup", flag.ExitOnError)
 	clientsFlag := fl.String("clients", "", "comma-separated clients to configure (default: interactive select)")
 	scope := fl.String("scope", "", "global | project (default: ask, or global with --yes)")
-	skipInstall := fl.Bool("skip-install", false, "do not install ctx to ~/.local/bin")
+	skipInstall := fl.Bool("skip-install", false, "do not install codedocket to ~/.local/bin")
 	yes := fl.Bool("yes", false, "non-interactive: defaults everywhere")
 	if err := fl.Parse(args); err != nil {
 		return err
@@ -49,14 +49,14 @@ func setupCtx(args []string) error {
 	// --- install to PATH (so clients can launch the unary MCP server) ---
 	binPath := ""
 	if !*skipInstall {
-		if interactive && !confirm("Install the ctx binary to ~/.local/bin? [Y/n] ") {
+		if interactive && !confirm("Install the codedocket binary to ~/.local/bin? [Y/n] ") {
 			binPath = defaultBinPath(home)
 		} else if p, err := installSelf(home); err != nil {
 			fmt.Fprintf(os.Stderr, "warning: self-install failed (%v); configs will reference %s\n", err, defaultBinPath(home))
 			binPath = defaultBinPath(home)
 		} else {
 			binPath = p
-			fmt.Printf("Installed ctx to %s\n", binPath)
+			fmt.Printf("Installed codedocket to %s\n", binPath)
 		}
 	} else {
 		binPath = defaultBinPath(home)
@@ -102,7 +102,7 @@ func setupCtx(args []string) error {
 		fmt.Println(line)
 	}
 	fmt.Println("\nDone! Restart your agents for MCP changes to take effect.")
-	fmt.Println("Then: cd your-project && ctx init")
+	fmt.Println("Then: cd your-project && codedocket init")
 	return nil
 }
 
@@ -127,7 +127,7 @@ func selectClients(home, csv string, interactive bool) ([]clientDef, error) {
 	}
 
 	detected := make([]bool, len(knownClients))
-	fmt.Println("Which agents should ctx configure?")
+	fmt.Println("Which agents should codedocket configure?")
 	for i, c := range knownClients {
 		detected[i] = clientDetected(home, c)
 		tag := "not found"
@@ -170,7 +170,7 @@ func clientDetected(home string, c clientDef) bool {
 	return false
 }
 
-// applyJSONOrTOML merges our ctx entry into a client's MCP config file,
+// applyJSONOrTOML merges our codedocket entry into a client's MCP config file,
 // backing up before any write. Reports codegraph-style Updated/Unchanged.
 func applyJSONOrTOML(label, path string, merge func([]byte, string) ([]byte, bool, error), binPath string) string {
 	existing, err := os.ReadFile(path)
@@ -212,9 +212,9 @@ func applyMarkdown(label, path string) string {
 	return fmt.Sprintf("%s: Updated %s", label, path)
 }
 
-// installSelf copies the running binary to ~/.local/bin/ctx.
+// installSelf copies the running binary to ~/.local/bin/codedocket.
 func installSelf(home string) (string, error) {
-	target := filepath.Join(home, ".local", "bin", "ctx")
+	target := filepath.Join(home, ".local", "bin", "codedocket")
 	if err := os.MkdirAll(filepath.Dir(target), 0o755); err != nil {
 		return "", err
 	}
@@ -276,7 +276,7 @@ func mustAbs(p string) string {
 // (re)install: the standard install location if it exists, else argv0. Using
 // the stable location keeps configs idempotent across runs.
 func defaultBinPath(home string) string {
-	p := filepath.Join(home, ".local", "bin", "ctx")
+	p := filepath.Join(home, ".local", "bin", "codedocket")
 	if _, err := os.Stat(p); err == nil {
 		return p
 	}

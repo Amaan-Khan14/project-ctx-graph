@@ -134,6 +134,24 @@
       "created": "2026-08-12T15:14:20.279656+05:30",
       "updated": "2026-08-12T15:14:20.279656+05:30"
     },
+    "product.rename-codedocket": {
+      "key": "product.rename-codedocket",
+      "kind": "decision",
+      "statement": "The project is renamed to CodeDocket: module github.com/Amaan-Khan14/codedocket, CLI binary codedocket, MCP server codedocket, and new stores use .codedocket/knowledge.json while resolving legacy .ctx stores for compatibility.",
+      "scope": [
+        "."
+      ],
+      "status": "active",
+      "evidence": [
+        {
+          "session": "cli",
+          "note": "Product rename from ctx/project-ctx-graph after GitHub repository rename.",
+          "at": "2026-08-14T21:47:44.100318+05:30"
+        }
+      ],
+      "created": "2026-08-14T21:47:44.100318+05:30",
+      "updated": "2026-08-14T21:47:44.100318+05:30"
+    },
     "scope.global-retained": {
       "key": "scope.global-retained",
       "kind": "decision",

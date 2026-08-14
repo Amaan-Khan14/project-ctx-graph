@@ -1,6 +1,6 @@
-# ctx — accumulated project context for coding sessions
+# codedocket — accumulated project context for coding sessions
 
-`ctx` gives a project a persistent, structured memory. Decisions, constraints,
+`codedocket` gives a project a persistent, structured memory. Decisions, constraints,
 bugs, assumptions, rationale, and facts are recorded as typed **knowledge
 entries** in a single git-committed JSON file, so any future session — human or
 agent — can ask *what does this project already know?* before acting.
@@ -48,28 +48,28 @@ Requires Go 1.22+.
 
 ```sh
 # Install directly from GitHub (recommended)
-go install github.com/Amaan-Khan14/project-ctx-graph/cmd/ctx@latest
+go install github.com/Amaan-Khan14/codedocket/cmd/codedocket@latest
 
 # Or build from source
-git clone https://github.com/Amaan-Khan14/project-ctx-graph.git
-cd project-ctx-graph
-go build -o ctx ./cmd/ctx
+git clone https://github.com/Amaan-Khan14/codedocket.git
+cd codedocket
+go build -o codedocket ./cmd/codedocket
 ```
 
 ### For MCP server (AI agents)
 
-Run the setup wizard to install `ctx` to `~/.local/bin` and configure supported
+Run the setup wizard to install `codedocket` to `~/.local/bin` and configure supported
 agent clients:
 
 ```sh
-ctx setup
+codedocket setup
 ```
 
 For non-interactive setup, pass the target clients and scope explicitly:
 
 ```sh
-ctx setup --clients codex,claude --scope global --yes
-ctx setup --clients opencode,cursor --scope project --skip-install
+codedocket setup --clients codex,claude --scope global --yes
+codedocket setup --clients opencode,cursor --scope project --skip-install
 ```
 
 Supported clients:
@@ -86,8 +86,8 @@ You can also configure an MCP client manually:
 ```json
 {
   "mcpServers": {
-    "ctx": {
-      "command": "ctx",
+    "codedocket": {
+      "command": "codedocket",
       "args": ["serve"]
     }
   }
@@ -96,29 +96,29 @@ You can also configure an MCP client manually:
 
 ## Usage
 
-All commands operate on `.ctx/knowledge.json` in the current directory.
+All commands operate on `.codedocket/knowledge.json` in the current directory.
 
-### `ctx init`
+### `codedocket init`
 
 Initialize a knowledge store.
 
 ```sh
-ctx init            # creates .ctx/knowledge.json; refuses if it exists
-ctx init --force    # overwrite an existing store
+codedocket init            # creates .codedocket/knowledge.json; refuses if it exists
+codedocket init --force    # overwrite an existing store
 ```
 
-By default, `ctx init` also ensures `AGENTS.md` contains the marker-delimited
+By default, `codedocket init` also ensures `AGENTS.md` contains the marker-delimited
 project knowledge instructions. Use `--no-agents` to create only the store.
 
-### `ctx setup`
+### `codedocket setup`
 
-Configure agent clients to call `ctx serve` over MCP and install the shared
+Configure agent clients to call `codedocket serve` over MCP and install the shared
 instruction snippet where supported.
 
 ```sh
-ctx setup
-ctx setup --clients codex,claude --scope global --yes
-ctx setup --clients opencode --scope project --skip-install
+codedocket setup
+codedocket setup --clients codex,claude --scope global --yes
+codedocket setup --clients opencode --scope project --skip-install
 ```
 
 Flags:
@@ -127,15 +127,15 @@ Flags:
 |---|---|
 | `--clients` | comma-separated clients: `opencode`, `claude`, `cursor`, `codex` |
 | `--scope` | `global` or `project`; defaults to interactive selection, or `global` with `--yes` |
-| `--skip-install` | do not copy the current binary to `~/.local/bin/ctx` |
+| `--skip-install` | do not copy the current binary to `~/.local/bin/codedocket` |
 | `--yes` | use non-interactive defaults |
 
-### `ctx record`
+### `codedocket record`
 
 Record knowledge, or add evidence to an existing key.
 
 ```sh
-ctx record --key storage.format --kind decision \
+codedocket record --key storage.format --kind decision \
   --statement "Single JSON file, git-committed." \
   --scope .
 
@@ -143,7 +143,7 @@ ctx record --key storage.format --kind decision \
 # The statement updates in place and evidence accumulates.
 
 # Replacing an old decision: record the new key and supersede the old one.
-ctx record --key extract.smart-caller --kind decision \
+codedocket record --key extract.smart-caller --kind decision \
   --statement "The calling agent performs extraction." \
   --scope mcp/ --supersedes extract.own-pipeline
 ```
@@ -151,7 +151,7 @@ ctx record --key extract.smart-caller --kind decision \
 Flags: `--key --kind --statement --scope a,b [--supersedes k1,k2] [--session] [--note]`
 (`--scope` and `--supersedes` are comma-separated; `--session` defaults to `cli`).
 
-### `ctx dispute`
+### `codedocket dispute`
 
 Flag an entry as contested when you believe it's wrong but can't yet replace
 it. Disputed entries **stay visible** — that's the point: a human should weigh
@@ -159,21 +159,21 @@ in. To *correct* knowledge, use `record` instead (same key, or new key +
 `--supersedes`).
 
 ```sh
-ctx dispute --key merge.conflicts --note "keys keep colliding"
+codedocket dispute --key merge.conflicts --note "keys keep colliding"
 ```
 
-### `ctx explore`
+### `codedocket explore`
 
 Retrieve knowledge — the read path, and the actual point of the tool.
 
 ```sh
-ctx explore                                        # list everything (ranked)
-ctx explore --query "extraction pipeline"          # keyword search
-ctx explore --path internal/merge/merge.go         # knowledge scoped to a path
-ctx explore --kind decision                        # filter by kind
-ctx explore --key storage.format                   # exact lookup (even superseded)
-ctx explore --include-superseded                   # reveal historical positions
-ctx explore --json                                 # machine-readable output
+codedocket explore                                        # list everything (ranked)
+codedocket explore --query "extraction pipeline"          # keyword search
+codedocket explore --path internal/merge/merge.go         # knowledge scoped to a path
+codedocket explore --kind decision                        # filter by kind
+codedocket explore --key storage.format                   # exact lookup (even superseded)
+codedocket explore --include-superseded                   # reveal historical positions
+codedocket explore --json                                 # machine-readable output
 ```
 
 Ranking is deterministic: scope matches outweigh keyword matches, evidence
@@ -195,7 +195,7 @@ merge.conflicts  [assumption, DISPUTED]  (evidence: 1)
 ## Project layout
 
 ```
-├── cmd/ctx/          # the ctx CLI (flag-based subcommands, one binary)
+├── cmd/codedocket/          # the codedocket CLI (flag-based subcommands, one binary)
 │   └── main.go  init.go  setup.go  record.go  dispute.go  explore.go
 ├── types.go          # Knowledge / Evidence / Edge / Store / QueryOpts
 ├── store.go          # Load/Save: atomic writes, diff-stable JSON
@@ -204,7 +204,7 @@ merge.conflicts  [assumption, DISPUTED]  (evidence: 1)
 └── *_test.go
 ```
 
-The root package `projectcontext` holds all core semantics; the CLI is a thin
+The root package `codedocket` holds all core semantics; the CLI is a thin
 presentation layer over it. Retrieval contract:
 
 ```go
@@ -214,10 +214,10 @@ func Query(s *Store, opts QueryOpts) []*Knowledge
 ## Roadmap
 
 - **M1/M2 — done.** Core package (store, deterministic merge, query) and the
-  `ctx` CLI (`init`, `record`, `dispute`, `explore`), dogfooded on this repo's
-  own `.ctx/` store.
-- **M3 — done.** `ctx serve`: an MCP stdio server exposing `ctx_record`,
-  `ctx_explore`, and `ctx_dispute` as tools so coding agents can read and
+  `codedocket` CLI (`init`, `record`, `dispute`, `explore`), dogfooded on this repo's
+  own `.codedocket/` store.
+- **M3 — done.** `codedocket serve`: an MCP stdio server exposing `codedocket_record`,
+  `codedocket_explore`, and `codedocket_dispute` as tools so coding agents can read and
   write project knowledge natively.
 - **M4 — done.** Onboarding: `init` bootstraps an AGENTS.md snippet into the
   target repo, and `setup` configures supported agent clients for MCP.

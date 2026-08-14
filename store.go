@@ -1,4 +1,4 @@
-package projectcontext
+package codedocket
 
 import (
 	"encoding/json"
@@ -13,7 +13,7 @@ import (
 func Load(path string) (*Store, error) {
 	b, err := os.ReadFile(path)
 	if errors.Is(err, fs.ErrNotExist) {
-		return nil, fmt.Errorf("no knowledge store at %s (run `ctx init`)", path)
+		return nil, fmt.Errorf("no knowledge store at %s (run `codedocket init`)", path)
 	}
 	if err != nil {
 		return nil, fmt.Errorf("reading store: %w", err)
@@ -69,28 +69,31 @@ func (s *Store) Save(path string) error {
 	return nil
 }
 
-// ErrNoStore is returned by ResolveStore when no .ctx store is found walking
-// up from the working directory.
-var ErrNoStore = errors.New("no .ctx store found")
+// ErrNoStore is returned by ResolveStore when no knowledge store is found
+// walking up from the working directory.
+var ErrNoStore = errors.New("no codedocket store found")
 
 // ResolveStore walks up from the current directory (git-style) looking for
-// .ctx/knowledge.json. The single resolver shared by the CLI and the MCP
-// server. Note: `ctx init` does NOT walk up — it creates in cwd only.
-func ResolveStore() (ctxDir, knowledgePath string, err error) {
+// .codedocket/knowledge.json, falling back to legacy .ctx/knowledge.json for
+// pre-rename projects. The single resolver shared by the CLI and the MCP
+// server. Note: `codedocket init` does NOT walk up — it creates in cwd only.
+func ResolveStore() (storeDir, knowledgePath string, err error) {
 	dir, err := os.Getwd()
 	if err != nil {
 		return "", "", fmt.Errorf("getting current directory: %w", err)
 	}
 	for {
-		ctxDir = filepath.Join(dir, ".ctx")
-		knowledgePath = filepath.Join(ctxDir, "knowledge.json")
+		for _, name := range []string{".codedocket", ".ctx"} {
+			storeDir = filepath.Join(dir, name)
+			knowledgePath = filepath.Join(storeDir, "knowledge.json")
 
-		info, err := os.Stat(knowledgePath)
-		if err == nil && !info.IsDir() {
-			return ctxDir, knowledgePath, nil
-		}
-		if err != nil && !errors.Is(err, fs.ErrNotExist) {
-			return "", "", fmt.Errorf("checking %s: %w", knowledgePath, err)
+			info, err := os.Stat(knowledgePath)
+			if err == nil && !info.IsDir() {
+				return storeDir, knowledgePath, nil
+			}
+			if err != nil && !errors.Is(err, fs.ErrNotExist) {
+				return "", "", fmt.Errorf("checking %s: %w", knowledgePath, err)
+			}
 		}
 
 		parent := filepath.Dir(dir)

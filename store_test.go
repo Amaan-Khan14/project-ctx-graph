@@ -1,4 +1,4 @@
-package projectcontext
+package codedocket
 
 import (
 	"os"
@@ -9,7 +9,7 @@ import (
 )
 
 func TestSaveLoadRoundtrip(t *testing.T) {
-	path := filepath.Join(t.TempDir(), ".projectcontext", "knowledge.json")
+	path := filepath.Join(t.TempDir(), ".codedocket", "knowledge.json")
 	now := time.Date(2026, 8, 6, 12, 0, 0, 0, time.UTC)
 
 	s := NewStore()

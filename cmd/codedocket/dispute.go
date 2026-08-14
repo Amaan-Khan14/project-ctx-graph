@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/Amaan-Khan14/project-ctx-graph"
+	"github.com/Amaan-Khan14/codedocket"
 	"time"
 )
 
@@ -31,12 +31,12 @@ func disputeCtx(args []string) error {
 		return err
 	}
 
-	store, err := projectcontext.Load(knowledgeFilePath)
+	store, err := codedocket.Load(knowledgeFilePath)
 	if err != nil {
 		return err
 	}
 
-	if _, err := projectcontext.Dispute(
+	if _, err := codedocket.Dispute(
 		store,
 		*key,
 		*session,
