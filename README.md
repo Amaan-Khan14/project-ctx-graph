@@ -48,30 +48,51 @@ Requires Go 1.22+.
 
 ```sh
 # Install directly from GitHub (recommended)
-go install github.com/yourusername/ctx/cmd/ctx@latest
+go install github.com/Amaan-Khan14/project-ctx-graph/cmd/ctx@latest
 
 # Or build from source
-git clone https://github.com/yourusername/ctx.git
-cd ctx
+git clone https://github.com/Amaan-Khan14/project-ctx-graph.git
+cd project-ctx-graph
 go build -o ctx ./cmd/ctx
 ```
 
 ### For MCP server (AI agents)
 
-No manual installation needed! Configure your MCP client:
+Run the setup wizard to install `ctx` to `~/.local/bin` and configure supported
+agent clients:
+
+```sh
+ctx setup
+```
+
+For non-interactive setup, pass the target clients and scope explicitly:
+
+```sh
+ctx setup --clients codex,claude --scope global --yes
+ctx setup --clients opencode,cursor --scope project --skip-install
+```
+
+Supported clients:
+
+| client | global config | project config | global instructions |
+|---|---|---|---|
+| opencode | `~/.config/opencode/opencode.json` | `opencode.json` | `~/.config/opencode/AGENTS.md` |
+| Claude Code | `~/.claude.json` | `.mcp.json` | `~/.claude/CLAUDE.md` |
+| Cursor | `~/.cursor/mcp.json` | `.cursor/mcp.json` | none |
+| Codex CLI | `~/.codex/config.toml` | not supported in V1 | `~/.codex/AGENTS.md` |
+
+You can also configure an MCP client manually:
 
 ```json
 {
   "mcpServers": {
     "ctx": {
-      "command": "go",
-      "args": ["run", "github.com/yourusername/ctx/cmd/ctx@latest", "serve"]
+      "command": "ctx",
+      "args": ["serve"]
     }
   }
 }
 ```
-
-On first use, Go will automatically download and cache the server.
 
 ## Usage
 
@@ -85,6 +106,29 @@ Initialize a knowledge store.
 ctx init            # creates .ctx/knowledge.json; refuses if it exists
 ctx init --force    # overwrite an existing store
 ```
+
+By default, `ctx init` also ensures `AGENTS.md` contains the marker-delimited
+project knowledge instructions. Use `--no-agents` to create only the store.
+
+### `ctx setup`
+
+Configure agent clients to call `ctx serve` over MCP and install the shared
+instruction snippet where supported.
+
+```sh
+ctx setup
+ctx setup --clients codex,claude --scope global --yes
+ctx setup --clients opencode --scope project --skip-install
+```
+
+Flags:
+
+| flag | meaning |
+|---|---|
+| `--clients` | comma-separated clients: `opencode`, `claude`, `cursor`, `codex` |
+| `--scope` | `global` or `project`; defaults to interactive selection, or `global` with `--yes` |
+| `--skip-install` | do not copy the current binary to `~/.local/bin/ctx` |
+| `--yes` | use non-interactive defaults |
 
 ### `ctx record`
 
@@ -152,7 +196,7 @@ merge.conflicts  [assumption, DISPUTED]  (evidence: 1)
 
 ```
 ├── cmd/ctx/          # the ctx CLI (flag-based subcommands, one binary)
-│   └── main.go  init.go  record.go  dispute.go  explore.go
+│   └── main.go  init.go  setup.go  record.go  dispute.go  explore.go
 ├── types.go          # Knowledge / Evidence / Edge / Store / QueryOpts
 ├── store.go          # Load/Save: atomic writes, diff-stable JSON
 ├── merge.go          # Record/Dispute: the deterministic merge rules
@@ -172,11 +216,11 @@ func Query(s *Store, opts QueryOpts) []*Knowledge
 - **M1/M2 — done.** Core package (store, deterministic merge, query) and the
   `ctx` CLI (`init`, `record`, `dispute`, `explore`), dogfooded on this repo's
   own `.ctx/` store.
-- **M3 — next.** `ctx serve`: an MCP stdio server exposing `ctx_record`,
+- **M3 — done.** `ctx serve`: an MCP stdio server exposing `ctx_record`,
   `ctx_explore`, and `ctx_dispute` as tools so coding agents can read and
   write project knowledge natively.
-- **M4.** Onboarding: `init` bootstraps an AGENTS.md snippet into the target
-  repo.
+- **M4 — done.** Onboarding: `init` bootstraps an AGENTS.md snippet into the
+  target repo, and `setup` configures supported agent clients for MCP.
 
 ## Development
 

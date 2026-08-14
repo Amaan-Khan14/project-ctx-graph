@@ -52,10 +52,16 @@ record it so the next session does not rediscover it:
 `
 
 // ensureAgentsSnippet makes sure repoDir/AGENTS.md carries the ctx snippet.
+// Kept for the init path; equivalent to ensureMarkdownSnippet(dir, "AGENTS.md").
+func ensureAgentsSnippet(repoDir string) (string, error) {
+	return ensureMarkdownSnippet(repoDir, "AGENTS.md")
+}
+
+// ensureMarkdownSnippet makes sure dir/<name> carries the ctx snippet.
 // It never clobbers existing content. Returns the outcome: "present",
 // "created", or "appended".
-func ensureAgentsSnippet(repoDir string) (string, error) {
-	path := filepath.Join(repoDir, "AGENTS.md")
+func ensureMarkdownSnippet(dir, name string) (string, error) {
+	path := filepath.Join(dir, name)
 
 	data, err := os.ReadFile(path)
 	switch {

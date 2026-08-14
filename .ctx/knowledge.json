@@ -170,6 +170,24 @@
       "created": "2026-08-12T15:06:21.967333+05:30",
       "updated": "2026-08-12T15:08:37.422849+05:30"
     },
+    "setup.agent-onboarding": {
+      "key": "setup.agent-onboarding",
+      "kind": "decision",
+      "statement": "ctx setup configures supported agent clients for MCP by upserting a ctx server entry, installing the shared instruction snippet where supported, and optionally copying the binary to ~/.local/bin; Codex project-local TOML editing is deferred in V1.",
+      "scope": [
+        "cmd/ctx/"
+      ],
+      "status": "active",
+      "evidence": [
+        {
+          "session": "cli",
+          "note": "Documented and prepared for v0.2.0 release.",
+          "at": "2026-08-14T21:17:57.156426+05:30"
+        }
+      ],
+      "created": "2026-08-14T21:17:57.156426+05:30",
+      "updated": "2026-08-14T21:17:57.156426+05:30"
+    },
     "storage.git-as-history": {
       "key": "storage.git-as-history",
       "kind": "decision",

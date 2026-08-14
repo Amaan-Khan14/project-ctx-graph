@@ -44,6 +44,12 @@ func main() {
 			os.Exit(1)
 		}
 
+	case "setup":
+		if err := setupCtx(os.Args[2:]); err != nil {
+			fmt.Fprintln(os.Stderr, "ctx setup:", err)
+			os.Exit(1)
+		}
+
 	case "serve":
 		if err := serveCtx(); err != nil {
 			fmt.Fprintln(os.Stderr, "ctx serve:", err)
@@ -79,5 +85,6 @@ func usage() {
 	fmt.Fprintln(os.Stderr, "  dispute   mark knowledge as disputed")
 	fmt.Fprintln(os.Stderr, "  explore   explore project knowledge")
 	fmt.Fprintln(os.Stderr, "  serve     run MCP stdio server")
+	fmt.Fprintln(os.Stderr, "  setup     configure agent clients (MCP onboarding wizard)")
 	fmt.Fprintln(os.Stderr, "  version   print version")
 }
