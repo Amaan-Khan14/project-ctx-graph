@@ -1,0 +1,50 @@
+version: 2
+
+project_name: ctx
+
+builds:
+  - id: ctx
+    main: ./cmd/ctx
+    binary: ctx
+    goos: [darwin, linux, windows]
+    goarch: [amd64, arm64]
+    env:
+      - CGO_ENABLED=0 # pure Go: static binaries, painless cross-compile
+    ldflags:
+      - -s -w
+      - -X main.version={{.Version}}
+      - -X github.com/Amaan-Khan14/project-ctx-graph/internal/mcp.ServerInfoVersion={{.Version}}
+
+archives:
+  - id: ctx
+    formats: [tar.gz]
+    name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}{{ with .Arm }}v{{ . }}{{ end }}"
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+
+checksum:
+  name_template: "{{ .ProjectName }}_checksums.txt"
+
+snapshot:
+  version_template: "{{ incpatch .Version }}-dev"
+
+changelog:
+  use: git
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "Merge pull request"
+      - "Merge branch"
+
+release:
+  footer: |
+    ## MCP client config
+
+    ```json
+    { "ctx": { "type": "local", "command": ["ctx", "serve"], "enabled": true } }
+    ```
+
+    Then `cd your-project && ctx init`.

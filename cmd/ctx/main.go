@@ -4,8 +4,12 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"projectcontext"
+
+	projectcontext "github.com/Amaan-Khan14/project-ctx-graph"
 )
+
+// version is stamped by the release build (goreleaser ldflags); "dev" locally.
+var version = "dev"
 
 func main() {
 	if len(os.Args) < 2 {
@@ -46,6 +50,9 @@ func main() {
 			os.Exit(1)
 		}
 
+	case "version":
+		fmt.Println(version)
+
 	default:
 		fmt.Fprintf(os.Stderr, "unknown command: %s\n\n", os.Args[1])
 		usage()
@@ -72,4 +79,5 @@ func usage() {
 	fmt.Fprintln(os.Stderr, "  dispute   mark knowledge as disputed")
 	fmt.Fprintln(os.Stderr, "  explore   explore project knowledge")
 	fmt.Fprintln(os.Stderr, "  serve     run MCP stdio server")
+	fmt.Fprintln(os.Stderr, "  version   print version")
 }

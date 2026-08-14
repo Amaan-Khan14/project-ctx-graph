@@ -40,13 +40,38 @@ Supersession is recorded as a typed `supersedes` **edge**, so a query with
 `--include-superseded` can show an old position side-by-side with the one that
 replaced it.
 
-## Build
+## Installation
+
+### For CLI users
 
 Requires Go 1.22+.
 
 ```sh
+# Install directly from GitHub (recommended)
+go install github.com/yourusername/ctx/cmd/ctx@latest
+
+# Or build from source
+git clone https://github.com/yourusername/ctx.git
+cd ctx
 go build -o ctx ./cmd/ctx
 ```
+
+### For MCP server (AI agents)
+
+No manual installation needed! Configure your MCP client:
+
+```json
+{
+  "mcpServers": {
+    "ctx": {
+      "command": "go",
+      "args": ["run", "github.com/yourusername/ctx/cmd/ctx@latest", "serve"]
+    }
+  }
+}
+```
+
+On first use, Go will automatically download and cache the server.
 
 ## Usage
 

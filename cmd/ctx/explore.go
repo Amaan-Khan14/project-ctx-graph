@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"projectcontext"
+	"github.com/Amaan-Khan14/project-ctx-graph"
 	"strings"
 )
 

@@ -4,9 +4,9 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"github.com/Amaan-Khan14/project-ctx-graph"
 	"os"
 	"path/filepath"
-	"projectcontext"
 )
 
 func initCtx(args []string) error {

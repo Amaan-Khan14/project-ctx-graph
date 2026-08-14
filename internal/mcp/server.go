@@ -4,9 +4,9 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
+	"github.com/Amaan-Khan14/project-ctx-graph"
 	"io"
 	"os"
-	"projectcontext"
 	"time"
 )
 
@@ -33,6 +33,10 @@ const (
 )
 
 var clientName string // captured from initialize
+
+// ServerInfoVersion is reported in the initialize handshake; stamped by
+// release builds via ldflags.
+var ServerInfoVersion = "0.1.0"
 
 // handleMessage processes a single JSON-RPC request and returns the response (or nil for notifications)
 func handleMessage(line []byte) []byte {
@@ -81,7 +85,7 @@ func handleInitialize(id *json.RawMessage, params json.RawMessage) []byte {
 		"capabilities":    map[string]interface{}{"tools": map[string]interface{}{}},
 		"serverInfo": map[string]string{
 			"name":    "ctx",
-			"version": "0.1.0",
+			"version": ServerInfoVersion,
 		},
 	}
 

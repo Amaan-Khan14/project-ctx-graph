@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"projectcontext"
+	"github.com/Amaan-Khan14/project-ctx-graph"
 	"time"
 )
 

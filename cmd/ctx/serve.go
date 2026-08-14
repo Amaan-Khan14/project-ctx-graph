@@ -1,8 +1,8 @@
 package main
 
 import (
+	"github.com/Amaan-Khan14/project-ctx-graph/internal/mcp"
 	"os"
-	"projectcontext/internal/mcp"
 )
 
 func serveCtx() error {

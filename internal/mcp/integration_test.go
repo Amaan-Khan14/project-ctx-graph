@@ -2,9 +2,9 @@ package mcp
 
 import (
 	"bytes"
+	"github.com/Amaan-Khan14/project-ctx-graph"
 	"os"
 	"path/filepath"
-	"projectcontext"
 	"strings"
 	"testing"
 )
