@@ -1,3 +1,4 @@
-TASKS.md
-bin/
-dist/
+/TASKS.md
+/bin/
+/dist/
+npm/codedocket/vendor/

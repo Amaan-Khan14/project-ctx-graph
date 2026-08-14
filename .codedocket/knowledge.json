@@ -18,6 +18,25 @@
       "created": "2026-08-08T16:28:45.270197+05:30",
       "updated": "2026-08-08T16:28:45.270197+05:30"
     },
+    "distribution.npm-wrapper": {
+      "key": "distribution.npm-wrapper",
+      "kind": "decision",
+      "statement": "CodeDocket publishes an unscoped npm package named codedocket; its postinstall downloads the matching GitHub release binary and the bin launcher delegates to that native executable, giving users npx/npm install without Go.",
+      "scope": [
+        "README.md",
+        "npm/codedocket/"
+      ],
+      "status": "active",
+      "evidence": [
+        {
+          "session": "cli",
+          "note": "Implemented for v0.3.1 wrapper release.",
+          "at": "2026-08-14T22:20:42.342239+05:30"
+        }
+      ],
+      "created": "2026-08-14T22:20:42.342239+05:30",
+      "updated": "2026-08-14T22:20:42.342239+05:30"
+    },
     "explore.render-blocks": {
       "key": "explore.render-blocks",
       "kind": "fact",

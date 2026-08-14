@@ -1,0 +1,34 @@
+{
+  "name": "codedocket",
+  "version": "0.3.1",
+  "description": "Git-backed project memory for coding agents.",
+  "homepage": "https://github.com/Amaan-Khan14/codedocket#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Amaan-Khan14/codedocket.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Amaan-Khan14/codedocket/issues"
+  },
+  "bin": {
+    "codedocket": "bin/codedocket.js"
+  },
+  "scripts": {
+    "postinstall": "node install.js"
+  },
+  "files": [
+    "bin/",
+    "install.js",
+    "vendor/"
+  ],
+  "keywords": [
+    "mcp",
+    "agents",
+    "project-memory",
+    "coding-agents",
+    "knowledge"
+  ],
+  "engines": {
+    "node": ">=18"
+  }
+}

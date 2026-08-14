@@ -42,7 +42,22 @@ replaced it.
 
 ## Installation
 
-### For CLI users
+### Recommended: npm / npx
+
+Run CodeDocket without cloning this repo or installing Go:
+
+```sh
+npx -y codedocket serve
+```
+
+Or install it globally:
+
+```sh
+npm install -g codedocket
+codedocket setup
+```
+
+### From Go source
 
 Requires Go 1.22+.
 
