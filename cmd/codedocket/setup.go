@@ -218,7 +218,11 @@ func installSelf(home string) (string, error) {
 	if err := os.MkdirAll(filepath.Dir(target), 0o755); err != nil {
 		return "", err
 	}
-	src, err := os.Open(mustAbs(os.Args[0]))
+	execPath, err := os.Executable()
+	if err != nil {
+		return "", fmt.Errorf("locating executable: %w", err)
+	}
+	src, err := os.Open(execPath)
 	if err != nil {
 		return "", err
 	}
@@ -273,12 +277,16 @@ func mustAbs(p string) string {
 }
 
 // defaultBinPath is the path configs should point at when we do not
-// (re)install: the standard install location if it exists, else argv0. Using
-// the stable location keeps configs idempotent across runs.
+// (re)install: the standard install location if it exists, else the actual
+// executable path. Using the stable location keeps configs idempotent across runs.
 func defaultBinPath(home string) string {
 	p := filepath.Join(home, ".local", "bin", "codedocket")
 	if _, err := os.Stat(p); err == nil {
 		return p
 	}
+	if execPath, err := os.Executable(); err == nil {
+		return execPath
+	}
+	// Last resort fallback
 	return mustAbs(os.Args[0])
 }

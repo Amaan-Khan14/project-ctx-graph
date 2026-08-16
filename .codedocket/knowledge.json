@@ -225,6 +225,23 @@
       "created": "2026-08-14T21:17:57.156426+05:30",
       "updated": "2026-08-14T21:17:57.156426+05:30"
     },
+    "setup.npx-executable-path": {
+      "key": "setup.npx-executable-path",
+      "kind": "bug",
+      "statement": "setup's installSelf used os.Args[0] to locate the running binary; when launched via npx that value is just 'codedocket' (not a full path), causing it to fail. Fixed by using os.Executable() instead.",
+      "scope": [
+        "cmd/codedocket/setup.go"
+      ],
+      "status": "active",
+      "evidence": [
+        {
+          "session": "cli",
+          "at": "2026-08-16T22:18:03.929724+05:30"
+        }
+      ],
+      "created": "2026-08-16T22:18:03.929724+05:30",
+      "updated": "2026-08-16T22:18:03.929724+05:30"
+    },
     "storage.git-as-history": {
       "key": "storage.git-as-history",
       "kind": "decision",
