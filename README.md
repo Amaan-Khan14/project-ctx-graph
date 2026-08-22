@@ -95,6 +95,8 @@ Supported clients:
 | Claude Code | `~/.claude.json` | `.mcp.json` | `~/.claude/CLAUDE.md` |
 | Cursor | `~/.cursor/mcp.json` | `.cursor/mcp.json` | none |
 | Codex CLI | `~/.codex/config.toml` | not supported in V1 | `~/.codex/AGENTS.md` |
+| ZCode | `~/.zcode/cli/config.json` | `.zcode/config.json` | `~/.zcode/AGENTS.md` |
+| Kiro | `~/.kiro/settings/mcp.json` | `.kiro/settings/mcp.json` | none |
 
 You can also configure an MCP client manually:
 
@@ -140,7 +142,7 @@ Flags:
 
 | flag | meaning |
 |---|---|
-| `--clients` | comma-separated clients: `opencode`, `claude`, `cursor`, `codex` |
+| `--clients` | comma-separated clients: `opencode`, `claude`, `cursor`, `codex`, `zcode`, `kiro` |
 | `--scope` | `global` or `project`; defaults to interactive selection, or `global` with `--yes` |
 | `--skip-install` | do not copy the current binary to `~/.local/bin/codedocket` |
 | `--yes` | use non-interactive defaults |

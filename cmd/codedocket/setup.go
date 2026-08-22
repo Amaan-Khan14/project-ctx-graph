@@ -108,19 +108,19 @@ func setupCtx(args []string) error {
 
 func selectClients(home, csv string, interactive bool) ([]clientDef, error) {
 	if csv != "" {
-		var out []clientDef
 		names := map[string]clientDef{}
+		var known []string
 		for _, c := range knownClients {
-			names[strings.ToLower(c.Label)] = c
+			names[c.Name] = c
+			known = append(known, c.Name)
 		}
-		names["claude"] = knownClients[1]
-		names["codex"] = knownClients[3]
+		var out []clientDef
 		for _, name := range strings.Split(csv, ",") {
 			name = strings.TrimSpace(strings.ToLower(name))
 			if c, ok := names[name]; ok {
 				out = append(out, c)
 			} else {
-				return nil, fmt.Errorf("unknown client %q (known: opencode, claude, cursor, codex)", name)
+				return nil, fmt.Errorf("unknown client %q (known: %s)", name, strings.Join(known, ", "))
 			}
 		}
 		return out, nil

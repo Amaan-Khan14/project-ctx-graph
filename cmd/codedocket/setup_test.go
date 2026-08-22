@@ -86,6 +86,53 @@ func TestMergeMCPServersJSON(t *testing.T) {
 	}
 }
 
+func TestMergeZcodeJSON(t *testing.T) {
+	bin := "/x/codedocket"
+
+	// empty file: creates the full mcp.servers.codedocket nesting
+	merged, changed, err := mergeZcodeJSON(nil, bin)
+	if err != nil || !changed {
+		t.Fatalf("empty: changed=%v err=%v", changed, err)
+	}
+	var root map[string]interface{}
+	if err := json.Unmarshal(merged, &root); err != nil {
+		t.Fatal(err)
+	}
+	servers := root["mcp"].(map[string]interface{})["servers"].(map[string]interface{})
+	entry := servers["codedocket"].(map[string]interface{})
+	if entry["command"] != bin || entry["args"].([]interface{})[0] != "serve" {
+		t.Fatalf("entry: %+v", entry)
+	}
+
+	// preserves sibling servers and unrelated config (hooks, plugin state)
+	existing := []byte(`{
+	  "hooks": {"enabled": true},
+	  "plugins": {"marketplaces": []},
+	  "mcp": {"servers": {"other": {"command": "other", "args": ["x"]}}}
+	}`)
+	merged2, changed2, err := mergeZcodeJSON(existing, bin)
+	if err != nil || !changed2 {
+		t.Fatalf("preserve: changed=%v err=%v", changed2, err)
+	}
+	var root2 map[string]interface{}
+	json.Unmarshal(merged2, &root2)
+	servers2 := root2["mcp"].(map[string]interface{})["servers"].(map[string]interface{})
+	if _, ok := servers2["other"]; !ok {
+		t.Fatal("existing sibling server lost")
+	}
+	if _, ok := servers2["codedocket"]; !ok {
+		t.Fatal("codedocket not added")
+	}
+	if root2["hooks"] == nil || root2["plugins"] == nil {
+		t.Fatal("unrelated config keys lost")
+	}
+
+	// idempotent
+	if _, changed3, _ := mergeZcodeJSON(merged2, bin); changed3 {
+		t.Fatal("second merge should be Unchanged")
+	}
+}
+
 func TestAppendCodexTOML(t *testing.T) {
 	bin := "/x/codedocket"
 
@@ -134,6 +181,26 @@ func TestSelectClientsByName(t *testing.T) {
 	}
 	if _, err := selectClients(t.TempDir(), "nope", false); err == nil {
 		t.Fatal("unknown client must error")
+	}
+
+	// short names work for display-named clients, including zcode and kiro
+	got2, err := selectClients(t.TempDir(), "codex,zcode,kiro", false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(got2) != 3 || got2[1].Label != "ZCode" || got2[2].Label != "Kiro" {
+		t.Fatalf("new clients: %+v", got2)
+	}
+	// the error message must name every known client (no drift)
+	_, err = selectClients(t.TempDir(), "nope", false)
+	var known []string
+	for _, c := range knownClients {
+		known = append(known, c.Name)
+	}
+	for _, name := range known {
+		if !strings.Contains(err.Error(), name) {
+			t.Fatalf("error %q missing known client %q", err, name)
+		}
 	}
 }
 
