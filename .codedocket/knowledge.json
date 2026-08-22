@@ -145,6 +145,24 @@
       "created": "2026-08-22T16:26:39.57068+05:30",
       "updated": "2026-08-22T16:26:39.57068+05:30"
     },
+    "mcp.session-provenance": {
+      "key": "mcp.session-provenance",
+      "kind": "decision",
+      "statement": "The MCP server generates one sessionID at initialize and uses it for both the notes scratch dir and record's default session field (replacing bare clientInfo.name), so finalize's follow-through footnote can join records to sessions exactly. CLI record --session stays free-form; the finalize review copy instructs --session \u003cid\u003e.",
+      "scope": [
+        "internal/mcp/"
+      ],
+      "status": "active",
+      "evidence": [
+        {
+          "session": "zcode",
+          "note": "Surfaced while curating M6 Task 1: footnote join requires exact id match.",
+          "at": "2026-08-22T17:05:20.972652+05:30"
+        }
+      ],
+      "created": "2026-08-22T17:05:20.972652+05:30",
+      "updated": "2026-08-22T17:05:20.972652+05:30"
+    },
     "merge.deterministic-rules": {
       "key": "merge.deterministic-rules",
       "kind": "decision",
@@ -261,6 +279,42 @@
       "created": "2026-08-12T15:06:21.967333+05:30",
       "updated": "2026-08-12T15:08:37.422849+05:30"
     },
+    "sessions.finalized-basis": {
+      "key": "sessions.finalized-basis",
+      "kind": "decision",
+      "statement": "Finalized vs pending is a mechanical marker written by the finalize command at render completion (timestamp + note count); the stop hook checks only marker presence. No human is involved at marking time. Follow-through is verified deterministically via evidence.session provenance: the next finalize footnotes finalized-but-zero-records sessions within the retention window.",
+      "scope": [
+        "."
+      ],
+      "status": "active",
+      "evidence": [
+        {
+          "session": "zcode",
+          "note": "Closes the render-but-never-record gap; raised in M6 design review.",
+          "at": "2026-08-22T16:59:49.369002+05:30"
+        }
+      ],
+      "created": "2026-08-22T16:59:49.369002+05:30",
+      "updated": "2026-08-22T16:59:49.369002+05:30"
+    },
+    "sessions.scratch-lifecycle": {
+      "key": "sessions.scratch-lifecycle",
+      "kind": "decision",
+      "statement": "Session scratch files are pruned, not kept forever: finalize removes session dirs that are both finalized and older than the retention window (default 14 days); pending sessions are never auto-pruned. Provenance survives via evidence.note in accepted records. The never-delete invariant applies to knowledge.json only, never to scratch.",
+      "scope": [
+        "."
+      ],
+      "status": "active",
+      "evidence": [
+        {
+          "session": "zcode",
+          "note": "Raised in M6 design review: long-lived projects would otherwise accumulate hundreds of session dirs.",
+          "at": "2026-08-22T16:57:30.839684+05:30"
+        }
+      ],
+      "created": "2026-08-22T16:57:30.839684+05:30",
+      "updated": "2026-08-22T16:57:30.839684+05:30"
+    },
     "setup.agent-onboarding": {
       "key": "setup.agent-onboarding",
       "kind": "decision",
@@ -364,6 +418,24 @@
       ],
       "created": "2026-08-22T16:26:45.600216+05:30",
       "updated": "2026-08-22T16:26:45.600216+05:30"
+    },
+    "workflow.verify-commands": {
+      "key": "workflow.verify-commands",
+      "kind": "decision",
+      "statement": "Every completed-work handoff includes a copy-paste verification block: the exact commands the owner can run to reproduce the checks (build, tests, e2e in a throwaway dir, expected output), not just the claim that they pass.",
+      "scope": [
+        "."
+      ],
+      "status": "active",
+      "evidence": [
+        {
+          "session": "zcode",
+          "note": "Owner feedback 2026-08-22: agent-reported verification is not independently checkable without commands.",
+          "at": "2026-08-22T16:40:48.481442+05:30"
+        }
+      ],
+      "created": "2026-08-22T16:40:48.481442+05:30",
+      "updated": "2026-08-22T16:40:48.481442+05:30"
     }
   },
   "edges": [
