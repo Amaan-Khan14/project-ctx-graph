@@ -207,6 +207,24 @@
       "created": "2026-08-08T16:28:45.262774+05:30",
       "updated": "2026-08-08T16:28:45.262774+05:30"
     },
+    "note.session-identity": {
+      "key": "note.session-identity",
+      "kind": "fact",
+      "statement": "CLI note reuses the newest pending session whose id has prefix \u003cname\u003e- (many invocations, one logical session); MCP uses one sessionID generated at initialize for the notes dir AND record/dispute provenance defaults. Go's stdlib flag means CLI flags must precede the positional text.",
+      "scope": [
+        "notes.go"
+      ],
+      "status": "active",
+      "evidence": [
+        {
+          "session": "zcode",
+          "note": "M6 Task 1 implemented (commit 7a96012).",
+          "at": "2026-08-22T20:22:50.147522+05:30"
+        }
+      ],
+      "created": "2026-08-22T20:22:50.147522+05:30",
+      "updated": "2026-08-22T20:22:50.147522+05:30"
+    },
     "onboarding.agents-snippet": {
       "key": "onboarding.agents-snippet",
       "kind": "decision",
