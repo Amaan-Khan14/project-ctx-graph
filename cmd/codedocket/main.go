@@ -32,6 +32,12 @@ func main() {
 			os.Exit(1)
 		}
 
+	case "note":
+		if err := noteCtx(os.Args[2:]); err != nil {
+			fmt.Fprintln(os.Stderr, "codedocket note:", err)
+			os.Exit(1)
+		}
+
 	case "dispute":
 		if err := disputeCtx(os.Args[2:]); err != nil {
 			fmt.Fprintln(os.Stderr, "codedocket dispute:", err)
@@ -82,6 +88,7 @@ func usage() {
 	fmt.Fprintln(os.Stderr, "commands:")
 	fmt.Fprintln(os.Stderr, "  init      initialize a new knowledge store")
 	fmt.Fprintln(os.Stderr, "  record    record a decision or observation")
+	fmt.Fprintln(os.Stderr, "  note      capture a quick observation for later review")
 	fmt.Fprintln(os.Stderr, "  dispute   mark knowledge as disputed")
 	fmt.Fprintln(os.Stderr, "  explore   explore project knowledge")
 	fmt.Fprintln(os.Stderr, "  serve     run MCP stdio server")
